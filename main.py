@@ -12,11 +12,24 @@ def main():
     http_server = WSGIServer(('', 5000), APP)
     http_server.serve_forever()
 
-@APP.route("/bot")
+@APP.route("/bot", methods=['POST'])
 def endpoint():
+    if not request.form['text']:
+        return help()
     if request.form['text'] == "check":
         return check()
-    
+
+def help():
+    body = {"text": """
+check - Check if Citrix is free now
+reseve - Reserve for yourself
+free - Cancel your reservation
+"""}
+
+    resp = make_response(json.dumps(body), 200)
+    resp.headers["Content-type"] = "application/json"
+
+    return resp
 
 def check():
     body = {"text": None}
