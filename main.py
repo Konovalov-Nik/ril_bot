@@ -14,12 +14,12 @@ def main():
 
 @APP.route("/bot", methods=['POST'])
 def endpoint():
-    if not request.form['text']:
-        return help()
     if request.form['text'] == "check":
         return check()
     if request.form['text'] == "reserve":
         return reserve(request.form['user_name'])
+
+    return help()
 
 def help():
     body = {"text": """
@@ -37,7 +37,7 @@ def check():
     body = {"text": None}
 
     if STATUS["reserved"]:
-        body["text"] = "Citrix is reserved now by %s. Please wait!" % STATUS["reserver"]
+        body["text"] = "Citrix is reserved now by @%s. Please wait!" % STATUS["reserver"]
     else:
         body["text"] = "Citrix is free. Please reserve before using!"
 
@@ -50,7 +50,7 @@ def reserve(who):
     body = {"text": None}
 
     if STATUS["reserved"]:
-        body["text"] = "Citrix is reserved now by %s. Please wait!" % STATUS["reserver"]
+        body["text"] = "Citrix is reserved now by @%s. Please wait!" % STATUS["reserver"]
     else:
         STATUS["reserved"] = True
         STATUS["reserver"] = who
