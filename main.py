@@ -12,7 +12,12 @@ def main():
     http_server = WSGIServer(('', 5000), APP)
     http_server.serve_forever()
 
-@APP.route("/check")
+@APP.route("/bot")
+def endpoint():
+    if request.form['text'] == "check":
+        return check()
+    
+
 def check():
     body = {"text": None}
 
@@ -25,9 +30,6 @@ def check():
     resp.headers["Content-type"] = "application/json"
 
     return resp
-
-def reserve(reserver):
-    pass
 
 if __name__ == "__main__":
     main()
