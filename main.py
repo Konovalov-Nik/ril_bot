@@ -36,7 +36,7 @@ free - Cancel your reservation
     return resp
 
 def check():
-    body = {"text": None}
+    body = {"text": None, "response_type": "in_channel"}
 
     if STATUS["reserved"]:
         body["text"] = "Citrix is reserved now by <@%s>. Please wait!" % STATUS["reserver"]
@@ -49,7 +49,7 @@ def check():
     return resp
 
 def reserve(who):
-    body = {"text": None}
+    body = {"text": None, "response_type": "in_channel"}
 
     if STATUS["reserved"]:
         body["text"] = "Citrix is reserved now by <@%s>. Please wait!" % STATUS["reserver"]
@@ -64,7 +64,7 @@ def reserve(who):
     return resp
 
 def free(who):
-    body = {"text": None}
+    body = {"text": None, "response_type": "in_channel"}
 
     if not STATUS["reserved"]:
         body["text"] = "Citrix is free. Please reserve before using!"
