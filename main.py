@@ -66,7 +66,7 @@ def reserve(who):
 def free(who):
     body = {"text": None}
 
-    if !STATUS["reserved"]:
+    if not STATUS["reserved"]:
         body["text"] = "Citrix is free. Please reserve before using!"
 
     if who != STATUS["reserver"]:
