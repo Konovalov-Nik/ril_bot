@@ -95,7 +95,7 @@ def free(who):
 
 def notify():
     body = {"text": "You have reserved RIL access 1 hour ago.",
-            "attachemnts":[{
+            "attachments":[{
                 "attachment_type": "default",
                 "callback_id": "usage_check",
                 "actions":[
