@@ -102,12 +102,12 @@ def notify():
                 "actions":[
                     {"name": "ack",
                      "type": "button",
-                     "tesxt": "I still need it!",
+                     "text": "I still need it!",
                      "value": "ack"},
                     {"name": "deny",
                      "type": "button",
-                     "tesxt": "I don't need it anymore!",
-                     "value": "deny"},
+                     "text": "I don't need it anymore!",
+                     "value": "deny"}
                 ]
             }],
             "as_user": "true",
