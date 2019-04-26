@@ -95,7 +95,7 @@ def free(who):
 
 def notify():
     body = {"text": "You have reserved RIL access 1 hour ago.",
-            "attachments":[{
+            "attachments": json.dumps([{
                 "attachment_type": "default",
                 "callback_id": "usage_check",
                 "text": "Do you need it still?",
@@ -109,7 +109,7 @@ def notify():
                      "text": "I don't need it anymore!",
                      "value": "deny"}
                 ]
-            }],
+            }]),
             "as_user": "true",
             "response_type": "in_channel",
             "channel": "U03MW7287",
