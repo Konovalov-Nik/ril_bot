@@ -94,14 +94,27 @@ def free(who):
     return resp
 
 def notify():
-    body = {"text": "testing",
+    body = {"text": "You have reserved RIL access 1 hour ago.",
+            "attachemnts":[{
+                "attachment_type": "default",
+                "callback_id": "usage_check",
+                "actions":[
+                    {"name": "ack",
+                     "tesxt": "I still need it!",
+                     "value": "ack"},
+                    {"name": "deny",
+                     "tesxt": "I don't need it anymore!",
+                     "value": "deny"},
+                ]
+            }],
             "as_user": "true",
             "channel": "U03MW7287",
             "token": BOT_TOKEN}
     url = "https://slack.com/api/chat.postMessage"
 
     resp = requests.post(url, data=body, headers={"acccept": "application/json"})
-    print(resp)
+
+    return make_response("OK", 200)
 
 
 def ack_usage():
