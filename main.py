@@ -98,6 +98,7 @@ def notify():
             "attachments":[{
                 "attachment_type": "default",
                 "callback_id": "usage_check",
+                "text": "Do you need it still?",
                 "actions":[
                     {"name": "ack",
                      "type": "button",
