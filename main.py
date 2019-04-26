@@ -1,14 +1,24 @@
+from datetime import datetime
 from flask import Flask
 from flask import make_response
 from flask import request
 import json
 from gevent.pywsgi import WSGIServer
 import requests
+import os
 
-STATUS = {"reserved": False, "reserver": None, "expires_at": None}
+
+STATUS = {"reserved": False, "reserver": None, "reserved_at": None}
 APP = Flask(__name__)
+BOT_TOKEN = None
+
 
 def main():
+    global BOT_TOKEN
+    BOT_TOKEN = os.environ.get("BOT_TOKEN", None)
+    if BOT_TOKEN is None:
+        exit(1)
+
     http_server = WSGIServer(('', 5000), APP)
     http_server.serve_forever()
 
@@ -20,13 +30,15 @@ def endpoint():
         return reserve(request.form['user_id'])
     if request.form['text'] == "free":
         return free(request.form['user_id'])
+    if request.form['text'] == "test_notify":
+        return notify()
 
     return help()
 
 def help():
     body = {"text": """
 check - Check if Citrix is free now
-reseve - Reserve for yourself
+reserve - Reserve for yourself
 free - Cancel your reservation
 """}
 
@@ -80,6 +92,24 @@ def free(who):
     resp.headers["Content-type"] = "application/json"
 
     return resp
+
+def notify():
+    body = {"text": "testing",
+            "as_user": "true",
+            "channel": "U03MW7287",
+            "token": BOT_TOKEN}
+    url = "https://slack.com/api/chat.postMessage"
+
+    resp = requests.post(url, data=body, headers={"acccept": "application/json"})
+    print(resp)
+
+
+def ack_usage():
+    pass
+
+
+def deny_usage():
+    pass
 
 
 if __name__ == "__main__":
