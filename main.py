@@ -100,9 +100,11 @@ def notify():
                 "callback_id": "usage_check",
                 "actions":[
                     {"name": "ack",
+                     "type": "button",
                      "tesxt": "I still need it!",
                      "value": "ack"},
                     {"name": "deny",
+                     "type": "button",
                      "tesxt": "I don't need it anymore!",
                      "value": "deny"},
                 ]
