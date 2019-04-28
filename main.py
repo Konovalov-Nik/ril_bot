@@ -84,7 +84,7 @@ def reserve(who):
         body["text"] = "Citrix is yours. Please dont forget to free it when you are done!"
 
         global AFK_TIMER
-        AFK_TIMER = Timer(10, notify)
+        AFK_TIMER = Timer(12, notify)
         AFK_TIMER.start()
 
     resp = make_response(json.dumps(body), 200)
@@ -104,6 +104,7 @@ def free(who):
         STATUS["reserved"] = False
         STATUS["reserver"] = None
         body["text"] = "Citrix is free now!"
+        AFK_TIMER.cancel()
 
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
@@ -145,8 +146,21 @@ def notify():
 
 
 def ack_usage(who):
-    pass
+    if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
+        NOTIFICATION_AFK_TIMER.cancel()
 
+        global AFK_TIMER = Timer(12, notify)
+        AFK_TIMER.start()
+
+        body = {"text": "OK! It's yours!", "response_type": "in_channel"}
+
+    else:
+        body = {"text": "Sorry, too late. Reserve again if it's free.", "response_type": "in_channel"}
+
+    resp = make_response(json.dumps(body), 200)
+    resp.headers["Content-type"] = "application/json"
+
+    return resp
 
 def deny_usage(who):
     if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
