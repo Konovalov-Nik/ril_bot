@@ -152,6 +152,12 @@ def deny_usage():
     force_free()
     NOTIFICATION_AFK_TIMER.cancel()
 
+    body = {"text": "OK! It's free now!", "response_type": "in_channel"}
+    resp = make_response(json.dumps(body), 200)
+    resp.headers["Content-type"] = "application/json"
+
+    return resp
+
 
 if __name__ == "__main__":
     main()
