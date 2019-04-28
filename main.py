@@ -5,6 +5,8 @@ from flask import request
 import json
 from gevent.pywsgi import WSGIServer
 import requests
+import time
+from threading import Thread
 import os
 
 
@@ -12,6 +14,7 @@ STATUS = {"reserved": False, "reserver": None, "reserved_at": None}
 APP = Flask(__name__)
 BOT_TOKEN = None
 
+AFK_TIMER = None
 
 def main():
     global BOT_TOKEN
@@ -24,6 +27,14 @@ def main():
 
 @APP.route("/bot", methods=['POST'])
 def endpoint():
+    if "payload" in request.form:
+        payload = request.form["payload"]
+        answer = payload["actions"][0]["value"]
+        if answer == "ack":
+            return ack_usage()
+        if answer == "deny":
+            return deny_usage()
+
     if request.form['text'] == "check":
         return check()
     if request.form['text'] == "reserve":
@@ -69,6 +80,10 @@ def reserve(who):
         STATUS["reserved"] = True
         STATUS["reserver"] = who
         body["text"] = "Citrix is yours. Please dont forget to free it when you are done!"
+
+        global AFK_TIMER
+        AFK_TIMER = AFKTimer()
+        AFK_TIMER.start()
 
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
@@ -127,6 +142,19 @@ def ack_usage():
 
 def deny_usage():
     pass
+
+
+def start_notification_afk_timer():
+    pass
+
+
+class AFKTimer(Thread):
+    def run(self):
+        hour = 60 * 60
+        time.sleep(15)
+
+        notify()
+        start_notification_afk_timer()
 
 
 if __name__ == "__main__":
