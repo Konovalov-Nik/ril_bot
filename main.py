@@ -104,7 +104,11 @@ def free(who):
         STATUS["reserved"] = False
         STATUS["reserver"] = None
         body["text"] = "Citrix is free now!"
-        AFK_TIMER.cancel()
+
+        if AFK_TIMER.is_alive():
+            AFK_TIMER.cancel()
+        if NOTIFICATION_AFK_TIMER.is_alive():
+             NOTIFICATION_AFK_TIMER.cancel()
 
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
