@@ -6,7 +6,7 @@ import json
 from gevent.pywsgi import WSGIServer
 import requests
 import time
-from threading import Thread
+from threading import Timer
 import os
 
 
@@ -15,6 +15,7 @@ APP = Flask(__name__)
 BOT_TOKEN = None
 
 AFK_TIMER = None
+NOTIFICATION_AFK_TIMER = None
 
 def main():
     global BOT_TOKEN
@@ -82,7 +83,7 @@ def reserve(who):
         body["text"] = "Citrix is yours. Please dont forget to free it when you are done!"
 
         global AFK_TIMER
-        AFK_TIMER = AFKTimer()
+        AFK_TIMER = Timer(10, nontify)
         AFK_TIMER.start()
 
     resp = make_response(json.dumps(body), 200)
@@ -133,8 +134,6 @@ def notify():
 
     resp = requests.post(url, data=body, headers={"acccept": "application/json"})
 
-    return make_response("OK", 200)
-
 
 def ack_usage():
     pass
@@ -146,15 +145,6 @@ def deny_usage():
 
 def start_notification_afk_timer():
     pass
-
-
-class AFKTimer(Thread):
-    def run(self):
-        hour = 60 * 60
-        time.sleep(15)
-
-        notify()
-        start_notification_afk_timer()
 
 
 if __name__ == "__main__":
