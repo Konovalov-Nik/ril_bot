@@ -33,9 +33,9 @@ def endpoint():
         payload = json.loads(request.form["payload"])
         answer = payload["actions"][0]["value"]
         if answer == "ack":
-            return ack_usage()
+            return ack_usage(answer["user"]["id"])
         if answer == "deny":
-            return deny_usage()
+            return deny_usage(answer["user"]["id"])
 
     if request.form['text'] == "check":
         return check()
@@ -144,15 +144,19 @@ def notify():
     NOTIFICATION_AFK_TIMER.start()
 
 
-def ack_usage():
+def ack_usage(who):
     pass
 
 
-def deny_usage():
-    force_free()
-    NOTIFICATION_AFK_TIMER.cancel()
+def deny_usage(who):
+    if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
+        force_free()
+        NOTIFICATION_AFK_TIMER.cancel()
 
-    body = {"text": "OK! It's free now!", "response_type": "in_channel"}
+        body = {"text": "OK! It's free now!", "response_type": "in_channel"}
+    else:
+        body = {"text": "OK! But too late :)", "response_type": "in_channel"}
+
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
 
