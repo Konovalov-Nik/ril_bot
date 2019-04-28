@@ -17,6 +17,9 @@ BOT_TOKEN = None
 AFK_TIMER = None
 NOTIFICATION_AFK_TIMER = None
 
+AFK_TIMEOUT = 60 * 60 # 1hour
+NOTIFICATION_AFK_TIMEOUT = 5 * 60 # 5 min
+
 def main():
     global BOT_TOKEN
     BOT_TOKEN = os.environ.get("BOT_TOKEN", None)
@@ -84,7 +87,7 @@ def reserve(who):
         body["text"] = "Citrix is yours. Please dont forget to free it when you are done!"
 
         global AFK_TIMER
-        AFK_TIMER = Timer(12, notify)
+        AFK_TIMER = Timer(AFK_TIMEOUT, notify)
         AFK_TIMER.start()
 
     resp = make_response(json.dumps(body), 200)
@@ -145,7 +148,7 @@ def notify():
     resp = requests.post(url, data=body, headers={"acccept": "application/json"})
 
     global NOTIFICATION_AFK_TIMER
-    NOTIFICATION_AFK_TIMER = Timer(10, force_free)
+    NOTIFICATION_AFK_TIMER = Timer(NOTIFICATION_AFK_TIMEOUT, force_free)
     NOTIFICATION_AFK_TIMER.start()
 
 
@@ -154,7 +157,7 @@ def ack_usage(who):
         NOTIFICATION_AFK_TIMER.cancel()
 
         global AFK_TIMER
-        AFK_TIMER = Timer(12, notify)
+        AFK_TIMER = Timer(AFK_TIMEOUT, notify)
         AFK_TIMER.start()
 
         body = {"text": "OK! It's yours!", "response_type": "in_channel"}
