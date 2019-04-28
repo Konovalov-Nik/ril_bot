@@ -28,6 +28,7 @@ def main():
 
 @APP.route("/bot", methods=['POST'])
 def endpoint():
+    print (request.form)
     if "payload" in request.form:
         payload = request.form["payload"]
         answer = payload["actions"][0]["value"]
