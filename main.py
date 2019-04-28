@@ -14,8 +14,8 @@ STATUS = {"reserved": False, "reserver": None, "reserved_at": None}
 APP = Flask(__name__)
 BOT_TOKEN = None
 
-AFK_TIMER = None
-NOTIFICATION_AFK_TIMER = None
+AFK_TIMER = Timer(0, lambda x: x)
+NOTIFICATION_AFK_TIMER = Timer(0, lambda x: x)
 
 AFK_TIMEOUT = 60 * 60 # 1hour
 NOTIFICATION_AFK_TIMEOUT = 5 * 60 # 5 min
