@@ -149,7 +149,8 @@ def ack_usage(who):
     if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
         NOTIFICATION_AFK_TIMER.cancel()
 
-        global AFK_TIMER = Timer(12, notify)
+        global AFK_TIMER
+        AFK_TIMER = Timer(12, notify)
         AFK_TIMER.start()
 
         body = {"text": "OK! It's yours!", "response_type": "in_channel"}
