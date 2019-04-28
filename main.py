@@ -30,7 +30,7 @@ def main():
 def endpoint():
     print (request.form)
     if "payload" in request.form:
-        payload = request.form["payload"]
+        payload = json.loads(request.form["payload"])
         answer = payload["actions"][0]["value"]
         if answer == "ack":
             return ack_usage()
