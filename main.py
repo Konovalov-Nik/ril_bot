@@ -83,7 +83,7 @@ def reserve(who):
         body["text"] = "Citrix is yours. Please dont forget to free it when you are done!"
 
         global AFK_TIMER
-        AFK_TIMER = Timer(10, nontify)
+        AFK_TIMER = Timer(10, notify)
         AFK_TIMER.start()
 
     resp = make_response(json.dumps(body), 200)
@@ -108,6 +108,10 @@ def free(who):
     resp.headers["Content-type"] = "application/json"
 
     return resp
+
+def force_free():
+    STATUS["reserved"] = False
+    STATUS["reserver"] = None
 
 def notify():
     body = {"text": "You have reserved RIL access 1 hour ago.",
@@ -134,17 +138,18 @@ def notify():
 
     resp = requests.post(url, data=body, headers={"acccept": "application/json"})
 
+    global NOTIFICATION_AFK_TIMER
+    NOTIFICATION_AFK_TIMER = Timer(10, force_free)
+    NOTIFICATION_AFK_TIMER.start()
+
 
 def ack_usage():
     pass
 
 
 def deny_usage():
-    pass
-
-
-def start_notification_afk_timer():
-    pass
+    force_free()
+    NOTIFICATION_AFK_TIMER.cancell()
 
 
 if __name__ == "__main__":
