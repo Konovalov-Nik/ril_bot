@@ -150,7 +150,7 @@ def ack_usage():
 
 def deny_usage():
     force_free()
-    NOTIFICATION_AFK_TIMER.cancell()
+    NOTIFICATION_AFK_TIMER.cancel()
 
 
 if __name__ == "__main__":
