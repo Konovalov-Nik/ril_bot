@@ -141,7 +141,7 @@ def notify():
             }]),
             "as_user": "true",
             "response_type": "in_channel",
-            "channel": "U03MW7287",
+            "channel": STATUS["reserver"],
             "token": BOT_TOKEN}
     url = "https://slack.com/api/chat.postMessage"
 
