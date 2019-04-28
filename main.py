@@ -33,9 +33,9 @@ def endpoint():
         payload = json.loads(request.form["payload"])
         answer = payload["actions"][0]["value"]
         if answer == "ack":
-            return ack_usage(answer["user"]["id"])
+            return ack_usage(payload["user"]["id"])
         if answer == "deny":
-            return deny_usage(answer["user"]["id"])
+            return deny_usage(payload["user"]["id"])
 
     if request.form['text'] == "check":
         return check()
