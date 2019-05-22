@@ -82,7 +82,7 @@ def check():
         else:
             acc_status = "Citrix %s is free. Please reserve before using!" % acc["name"]
         body["text"] += acc_status
-        body["text"] += acc_status + "\n"
+        body["text"] += "\n"
 
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
