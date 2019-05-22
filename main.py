@@ -170,10 +170,9 @@ def request_reservation():
             "attachments": ""}
 
     attachments = [{
-        "type": "section",
         "block_id": "acc_section",
         "text": {
-            "type": "mrkdwn",
+            "type": "plain_text",
             "text": "Select account"
         },
         "accessory": {
@@ -196,7 +195,7 @@ def request_reservation():
             "value": "reserve_%s" % acc["id"]
         }
         attachments[0]["accessory"]["options"].append(option)
-    body["attachments"] = attachments
+    body["attachments"] = json.dumps(attachments)
 
 
     resp = make_response(json.dumps(body), 200)
