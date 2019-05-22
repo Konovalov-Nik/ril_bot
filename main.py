@@ -182,7 +182,7 @@ def request_reservation():
             },
             "options": []
         }
-    }]
+    }]}
 
     for acc in STATUS:
         option = {
