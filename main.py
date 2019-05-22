@@ -166,16 +166,15 @@ def notify():
 
 def request_reservation():
 
-    body = {"text": "Choose which one whould you like to take.",
-            "attachments": ""}
-
-
-    attachments = [{
-        "attachment_type": "default",
-        "callback_id": "reservaion_request",
-        "text": "Choose account",
+    body = {"blocks":[{
+        "type": "section",
+        "block_id": "acc_pick_section",
+        "text": {
+            "type": "plain_text",
+            "text": "Choose account"
+        },
         "accessory": {
-            "action_id": "reservaion_request",
+            "action_id": "account_reservation",
             "type": "static_select",
             "placeholder": {
                 "type": "plain_text",
@@ -193,9 +192,7 @@ def request_reservation():
             },
             "value": "reserve_%s" % acc["id"]
         }
-        attachments[0]["accessory"]["options"].append(option)
-
-    body["attachments"] = json.dumps(attachments)
+        body["blocks"][0]["accessory"]["options"].append(option)
 
 
     resp = make_response(json.dumps(body), 200)
