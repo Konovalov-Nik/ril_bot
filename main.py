@@ -10,12 +10,15 @@ from threading import Timer
 import os
 
 
-STATUS = {"reserved": False, "reserver": None, "reserved_at": None}
+STATUS = [
+    {"name": "Shrinivas.Mira", "id": 1, "reserved": False, "reserver": None, "reserved_at": None,
+     "afk_timer": Timer(0, lambda x: x), "notification_afk_timer": Timer(0, lambda x: x)},
+    {"name": "Sachin.Tripathi", "id": 2, "reserved": False, "reserver": None, "reserved_at": None,
+     "afk_timer": Timer(0, lambda x: x), "notification_afk_timer": Timer(0, lambda x: x)}
+]
+
 APP = Flask(__name__)
 BOT_TOKEN = None
-
-AFK_TIMER = Timer(0, lambda x: x)
-NOTIFICATION_AFK_TIMER = Timer(0, lambda x: x)
 
 AFK_TIMEOUT = 60 * 60 # 1hour
 NOTIFICATION_AFK_TIMEOUT = 5 * 60 # 5 min
@@ -33,17 +36,24 @@ def main():
 def endpoint():
     print (request.form)
     if "payload" in request.form:
+        # handling form responses
         payload = json.loads(request.form["payload"])
         answer = payload["actions"][0]["value"]
+        user_id = payload["user"]["id"]
         if answer == "ack":
-            return ack_usage(payload["user"]["id"])
+            return ack_usage(user_id)
         if answer == "deny":
-            return deny_usage(payload["user"]["id"])
+            return deny_usage(user_id)
+        if "reserve" in answer:
+            acc_id = answer[:len("reserve_")]
+            return reserve(user_id, acc_id)
 
+
+    # simple requests
     if request.form['text'] == "check":
         return check()
     if request.form['text'] == "reserve":
-        return reserve(request.form['user_id'])
+        return request_reservation()
     if request.form['text'] == "free":
         return free(request.form['user_id'])
     if request.form['text'] == "test_notify":
@@ -64,19 +74,22 @@ free - Cancel your reservation
     return resp
 
 def check():
-    body = {"text": None, "response_type": "in_channel"}
+    body = {"text": "", "response_type": "in_channel"}
 
-    if STATUS["reserved"]:
-        body["text"] = "Citrix is reserved now by <@%s>. Please wait!" % STATUS["reserver"]
-    else:
-        body["text"] = "Citrix is free. Please reserve before using!"
+    for acc in STATUS:
+        if acc["reserved"]:
+            acc_status = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
+        else:
+            acc_status = "Citrix %s is free. Please reserve before using!" % acc["name"]
+        body["text"] += acc_status
+        body["text"] += acc_status + "\n"
 
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
 
     return resp
 
-def reserve(who):
+def reserve(who, what):
     body = {"text": None, "response_type": "in_channel"}
 
     if STATUS["reserved"]:
@@ -95,7 +108,7 @@ def reserve(who):
 
     return resp
 
-def free(who):
+def free(who, what):
     body = {"text": None, "response_type": "in_channel"}
 
     if not STATUS["reserved"]:
@@ -118,7 +131,7 @@ def free(who):
 
     return resp
 
-def force_free():
+def force_free(what):
     STATUS["reserved"] = False
     STATUS["reserver"] = None
 
@@ -151,8 +164,48 @@ def notify():
     NOTIFICATION_AFK_TIMER = Timer(NOTIFICATION_AFK_TIMEOUT, force_free)
     NOTIFICATION_AFK_TIMER.start()
 
+def request_reservation():
 
-def ack_usage(who):
+    body = {"text": "Choose which one whould you like to take.",
+            "attachments": ""}
+
+    attachments = [{
+        "type": "section",
+        "block_id": "acc_section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "Select account"
+        },
+        "accessory": {
+            "action_id": "reservaion_request",
+            "type": "static_select",
+            "placeholder": {
+                "type": "plain_text",
+                "text": "..."
+            },
+            "options": []
+        }
+    }]
+
+    for acc in STATUS:
+        option = {
+            "text": {
+                "type": "plain_text",
+                "text": acc["name"]
+            },
+            "value": "reserve_%s" % acc["id"]
+        }
+        attachments[0]["accessory"]["options"].append(option)
+    body["attachments"] = json.dumps(attachments)
+
+
+    resp = make_response(json.dumps(body), 200)
+    resp.headers["Content-type"] = "application/json"
+
+    return resp
+
+
+def ack_usage(who, what):
     if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
         NOTIFICATION_AFK_TIMER.cancel()
 
@@ -170,7 +223,7 @@ def ack_usage(who):
 
     return resp
 
-def deny_usage(who):
+def deny_usage(who, what):
     if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
         force_free()
         NOTIFICATION_AFK_TIMER.cancel()
