@@ -37,7 +37,7 @@ def endpoint():
     print (request.form)
     if "payload" in request.form:
         # handling form responses
-        payload = request.form["payload"]
+        payload = json.loads(request.form["payload"])
         action = payload["actions"][0]
         action_id = action["action_id"]
 
