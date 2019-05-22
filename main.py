@@ -169,49 +169,33 @@ def request_reservation():
     body = {"text": "Choose which one whould you like to take.",
             "attachments": ""}
 
-#
-#    attachments = [{
-#        "text": {
-#            "type": "plain_text",
-#            "text": "Select account"
-#        },
-#        "accessory": {
-#            "action_id": "reservaion_request",
-#            "type": "static_select",
-#            "placeholder": {
-#                "type": "plain_text",
-#                "text": "..."
-#            },
-#            "options": []
-#        }
-#    }]
-#
-#    for acc in STATUS:
-#        option = {
-#            "text": {
-#                "type": "plain_text",
-#                "text": acc["name"]
-#            },
-#            "value": "reserve_%s" % acc["id"]
-#        }
-#        attachments[0]["accessory"]["options"].append(option)
-    attachments = "attachments": json.dumps([{
-        "attachment_type": "default",
-        "callback_id": "usage_check",
-        "text": "Do you need it still?",
-        "actions":[
-            {"name": "ack",
-             "type": "button",
-             "text": "I still need it!",
-             "value": "ack"},
-            {"name": "deny",
-             "type": "button",
-             "text": "I don't need it anymore!",
-             "value": "deny"}
-        ]
-    }])
 
-    body["attachments"] = attachments
+    attachments = [{
+        "attachment_type": "default",
+        "callback_id": "reservaion_request",
+        "text": "Choose account",
+        "accessory": {
+            "action_id": "reservaion_request",
+            "type": "static_select",
+            "placeholder": {
+                "type": "plain_text",
+                "text": "..."
+            },
+            "options": []
+        }
+    }]
+
+    for acc in STATUS:
+        option = {
+            "text": {
+                "type": "plain_text",
+                "text": acc["name"]
+            },
+            "value": "reserve_%s" % acc["id"]
+        }
+        attachments[0]["accessory"]["options"].append(option)
+
+    body["attachments"] = json.dumps(attachments)
 
 
     resp = make_response(json.dumps(body), 200)
