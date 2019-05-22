@@ -43,7 +43,7 @@ def endpoint():
 
         if action_id == "account_reservation":
             raw_value = action["selected_option"]["value"]
-            acc_id = raw_value[len("reserve_"):]
+            acc_id = int(raw_value[len("reserve_"):])
             user_id = payload["user"]["id"]
 
             return reserve(user_id, acc_id)
