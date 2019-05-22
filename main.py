@@ -170,7 +170,6 @@ def request_reservation():
             "attachments": ""}
 
     attachments = [{
-        "block_id": "acc_section",
         "text": {
             "type": "plain_text",
             "text": "Select account"
