@@ -177,7 +177,7 @@ def notify():
 
 def request_reservation():
 
-    body = {"blocks":[{
+    body = {"response_type": "ephemeral", "blocks":[{
         "type": "section",
         "block_id": "acc_pick_section",
         "text": {
@@ -187,6 +187,24 @@ def request_reservation():
         "accessory": {
             "action_id": "account_reservation",
             "type": "static_select",
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Confirm"
+                    },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Plese confirm"
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "OK"
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "I've changed my mind!"
+                }
+            },
             "placeholder": {
                 "type": "plain_text",
                 "text": "..."
