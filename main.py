@@ -196,7 +196,7 @@ def request_reservation():
             "value": "reserve_%s" % acc["id"]
         }
         attachments[0]["accessory"]["options"].append(option)
-    body["attachments"] = json.dumps(attachments)
+    body["attachments"] = attachments
 
 
     resp = make_response(json.dumps(body), 200)
