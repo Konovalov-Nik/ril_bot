@@ -37,16 +37,26 @@ def endpoint():
     print (request.form)
     if "payload" in request.form:
         # handling form responses
-        payload = json.loads(request.form["payload"])
-        answer = payload["actions"][0]["value"]
-        user_id = payload["user"]["id"]
-        if answer == "ack":
-            return ack_usage(user_id)
-        if answer == "deny":
-            return deny_usage(user_id)
-        if "reserve" in answer:
-            acc_id = answer[:len("reserve_")]
+        payload = request.form["payload"]
+        action = payload["actions"][0]
+        action_id = action["action_id"]
+
+        if action_id == "account_reservation":
+            raw_value = action["selected_option"]["value"]
+            acc_id = raw_value[len("reserve_"):]
+            user_id = payload["user"]["id"]
+
             return reserve(user_id, acc_id)
+        #payload = json.loads(request.form["payload"])
+        #answer = payload["actions"][0]["value"]
+        #user_id = payload["user"]["id"]
+        #if answer == "ack":
+        #    return ack_usage(user_id)
+        #if answer == "deny":
+        #    return deny_usage(user_id)
+        #if "reserve" in answer:
+        #    acc_id = answer[:len("reserve_")]
+        #    return reserve(user_id, acc_id)
 
 
     # simple requests
@@ -90,18 +100,19 @@ def check():
     return resp
 
 def reserve(who, what):
+
     body = {"text": None, "response_type": "in_channel"}
 
-    if STATUS["reserved"]:
-        body["text"] = "Citrix is reserved now by <@%s>. Please wait!" % STATUS["reserver"]
+    acc = get_acc_by_id(what)
+    if acc["reserved"]:
+        body["text"] = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
     else:
-        STATUS["reserved"] = True
-        STATUS["reserver"] = who
-        body["text"] = "Citrix is yours. Please dont forget to free it when you are done!"
+        acc["reserved"] = True
+        acc["reserver"] = who
+        body["text"] = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
 
-        global AFK_TIMER
-        AFK_TIMER = Timer(AFK_TIMEOUT, notify)
-        AFK_TIMER.start()
+        acc["afk_timer"] = Timer(AFK_TIMEOUT, notify)
+        acc["afk_timer"].start()
 
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
@@ -233,6 +244,10 @@ def deny_usage(who, what):
 
     return resp
 
+def get_acc_by_id(_id):
+    for acc in STATUS:
+        if acc["id"] == _id:
+            return acc
 
 if __name__ == "__main__":
     main()
