@@ -239,7 +239,7 @@ def request_reservation():
             },
             "value": "reserve_%s" % acc["id"]
         }
-        body["blocks"][0]["accessory"]["options"].append(option)
+        body["blocks"][1]["accessory"]["options"].append(option)
 
 
     resp = make_response(json.dumps(body), 200)
