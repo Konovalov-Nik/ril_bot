@@ -118,7 +118,7 @@ def reserve(who, what):
         acc["reserver"] = who
         body["text"] = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
 
-        acc["afk_timer"] = Timer(AFK_TIMEOUT, notify)
+        acc["afk_timer"] = Timer(AFK_TIMEOUT, notify, args=(who, what))
         acc["afk_timer"].start()
 
     resp = make_response(json.dumps(body), 200)
@@ -159,7 +159,7 @@ def force_free(what):
     acc["reserved"] = False
     acc["reserver"] = None
 
-def notify():
+def notify(who, what):
     body = {"text": "You have reserved RIL access 1 hour ago.",
             "attachments": json.dumps([{
                 "attachment_type": "default",
@@ -178,15 +178,15 @@ def notify():
             }]),
             "as_user": "true",
             "response_type": "in_channel",
-            "channel": STATUS["reserver"],
+            "channel": who,
             "token": BOT_TOKEN}
     url = "https://slack.com/api/chat.postMessage"
 
     resp = requests.post(url, data=body, headers={"acccept": "application/json"})
 
-    global NOTIFICATION_AFK_TIMER
-    NOTIFICATION_AFK_TIMER = Timer(NOTIFICATION_AFK_TIMEOUT, force_free)
-    NOTIFICATION_AFK_TIMER.start()
+    acc = get_acc_by_id(what)
+    acc["notification_afk_timer"] = Timer(NOTIFICATION_AFK_TIMEOUT, force_free, args=(what,))
+    acc["notification_afk_timer"].start()
 
 def request_reservation():
 
