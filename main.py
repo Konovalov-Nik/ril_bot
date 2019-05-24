@@ -177,13 +177,18 @@ def notify():
 
 def request_reservation():
 
-    body = {"response_type": "ephemeral", "blocks":[{
+    body = {"response_type": "ephemeral", "blocks":[
+    {
         "type": "section",
-        "block_id": "acc_pick_section",
+        "block_id": "header",
         "text": {
             "type": "plain_text",
             "text": "Choose account"
-        },
+        }
+    },
+    {
+        "type": "section",
+        "block_id": "acc_pick_section",
         "accessory": {
             "action_id": "account_reservation",
             "type": "static_select",
