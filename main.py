@@ -125,7 +125,7 @@ def reserve(who, what, where):
     if acc["reserved"]:
         text = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
     elif user_has_reserved:
-        text =  = "You have already reserved an account."
+        text = "You have already reserved an account."
     else:
         acc["reserved"] = True
         acc["reserver"] = who
