@@ -103,17 +103,20 @@ def check():
 def reserve(who, what, where):
 
     body = {
-    "blocks":[{
-        "type": "section",
-        "block_id": "header",
-        "text": {
-            "type": "plain_text",
-            "text": None
-        }}],
-    "as_user": "true",
-    "response_type": "in_channel",
-    "channel": where,
-    "token": BOT_TOKEN}
+        "blocks":[{
+            "type": "section",
+            "block_id": "response",
+            "text": {
+                "type": "plain_text",
+                "text": ""
+            }
+        }],
+        "text": "",
+        "as_user": "true",
+        "response_type": "in_channel",
+        "channel": where,
+        "token": BOT_TOKEN
+    }
 
     text = body["blocks"][0]["text"]
 
