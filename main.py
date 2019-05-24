@@ -108,11 +108,11 @@ def reserve(who, what, where):
         "text": {
             "type": "plain_text",
             "text": None
-        },
+        }],
         "as_user": "true",
         "response_type": "in_channel",
         "channel": where,
-        "token": BOT_TOKEN}]
+        "token": BOT_TOKEN}
     }
     text = body["blocks"][0]["text"]
 
