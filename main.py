@@ -103,9 +103,16 @@ def reserve(who, what):
 
     body = {"text": None, "response_type": "in_channel"}
 
+    user_has_reserved = False
+    for acc in STATUS:
+        if acc["reserver"] == who:
+            user_has_reserved = True
+
     acc = get_acc_by_id(what)
     if acc["reserved"]:
         body["text"] = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
+    else if user_has_reserved:
+        body["text"] = "You have already reserved an account."
     else:
         acc["reserved"] = True
         acc["reserver"] = who
@@ -119,23 +126,27 @@ def reserve(who, what):
 
     return resp
 
-def free(who, what):
+def free(who):
     body = {"text": None, "response_type": "in_channel"}
 
-    if not STATUS["reserved"]:
-        body["text"] = "Citrix is free. Please reserve before using!"
+    found = False
 
-    if who != STATUS["reserver"]:
-        body["text"] = "Citrix is reserved now by <@%s>. Ask him to free it!" % STATUS["reserver"]
-    else:
-        STATUS["reserved"] = False
-        STATUS["reserver"] = None
-        body["text"] = "Citrix is free now!"
+    for acc in STATUS:
+        if acc["reserver"] == who:
+            acc["reserved"] = False
+            acc["reserver"] = None
+            body["text"] = "Citrix is free now!"
 
-        if AFK_TIMER.is_alive():
-            AFK_TIMER.cancel()
-        if NOTIFICATION_AFK_TIMER.is_alive():
-             NOTIFICATION_AFK_TIMER.cancel()
+            if acc["afk_timer"].is_alive():
+                acc["afk_timer"].cancel()
+            if acc["notification_afk_timer"].is_alive():
+                 acc["notification_afk_timer"].cancel()
+
+            found = True
+            break
+
+    if not found:
+        body["text"] = "You have no reservations"
 
     resp = make_response(json.dumps(body), 200)
     resp.headers["Content-type"] = "application/json"
@@ -143,8 +154,10 @@ def free(who, what):
     return resp
 
 def force_free(what):
-    STATUS["reserved"] = False
-    STATUS["reserver"] = None
+    acc = get_acc_by_id(what)
+
+    acc["reserved"] = False
+    acc["reserver"] = None
 
 def notify():
     body = {"text": "You have reserved RIL access 1 hour ago.",
