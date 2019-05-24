@@ -129,7 +129,7 @@ def reserve(who, what, where):
     else:
         acc["reserved"] = True
         acc["reserver"] = who
-        text =  = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
+        text = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
 
         acc["afk_timer"] = Timer(AFK_TIMEOUT, notify, args=(who, what))
         acc["afk_timer"].start()
