@@ -140,7 +140,8 @@ def reserve(who, what, where):
 
 
     url = "https://slack.com/api/chat.postMessage"
-    requests.post(url, data=body, headers={"acccept": "application/json"})
+    bot_response = requests.post(url, data=body, headers={"acccept": "application/json"})
+    print(bot_response.text)
 
     resp = make_response("OK", 200)
     return resp
