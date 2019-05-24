@@ -45,8 +45,9 @@ def endpoint():
             raw_value = action["selected_option"]["value"]
             acc_id = int(raw_value[len("reserve_"):])
             user_id = payload["user"]["id"]
+            channel_id = payload["channel_id"]
 
-            return reserve(user_id, acc_id)
+            return reserve(user_id, acc_id, channel_id)
         #payload = json.loads(request.form["payload"])
         #answer = payload["actions"][0]["value"]
         #user_id = payload["user"]["id"]
@@ -99,9 +100,21 @@ def check():
 
     return resp
 
-def reserve(who, what):
+def reserve(who, what, where):
 
-    body = {"text": None, "response_type": "in_channel"}
+    body = {"blocks":[{
+        "type": "section",
+        "block_id": "header",
+        "text": {
+            "type": "plain_text",
+            "text": None
+        },
+        "as_user": "true",
+        "response_type": "in_channel",
+        "channel": where,
+        "token": BOT_TOKEN}]
+    }
+    text = body["blocks"][0]["text"]
 
     user_has_reserved = False
     for acc in STATUS:
@@ -110,20 +123,22 @@ def reserve(who, what):
 
     acc = get_acc_by_id(what)
     if acc["reserved"]:
-        body["text"] = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
+        text = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
     elif user_has_reserved:
-        body["text"] = "You have already reserved an account."
+        text =  = "You have already reserved an account."
     else:
         acc["reserved"] = True
         acc["reserver"] = who
-        body["text"] = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
+        text =  = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
 
         acc["afk_timer"] = Timer(AFK_TIMEOUT, notify, args=(who, what))
         acc["afk_timer"].start()
 
-    resp = make_response(json.dumps(body), 200)
-    resp.headers["Content-type"] = "application/json"
 
+    url = "https://slack.com/api/chat.postMessage"
+    requests.post(url, data=body, headers={"acccept": "application/json"})
+
+    resp = make_response(200)
     return resp
 
 def free(who):
@@ -190,7 +205,7 @@ def notify(who, what):
 
 def request_reservation():
 
-    body = {"response_type": "ephemeral", "blocks":[
+    body = {"blocks":[
     {
         "type": "section",
         "block_id": "header",
