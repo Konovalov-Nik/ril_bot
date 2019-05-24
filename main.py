@@ -45,7 +45,7 @@ def endpoint():
             raw_value = action["selected_option"]["value"]
             acc_id = int(raw_value[len("reserve_"):])
             user_id = payload["user"]["id"]
-            channel_id = payload["channel_id"]
+            channel_id = payload["container"]["channel_id"]
 
             return reserve(user_id, acc_id, channel_id)
         #payload = json.loads(request.form["payload"])
