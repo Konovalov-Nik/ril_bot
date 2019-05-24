@@ -105,7 +105,7 @@ def reserve(who, what, where):
     body = {
         "blocks":[{
             "type": "section",
-            "block_id": "response",
+            "block_id": "reservation_response",
             "text": {
                 "type": "plain_text",
                 "text": ""
@@ -118,7 +118,7 @@ def reserve(who, what, where):
         "token": BOT_TOKEN
     }
 
-    text = body["blocks"][0]["text"]
+    text = body["blocks"][0]["text"]["text"]
 
     user_has_reserved = False
     for acc in STATUS:
