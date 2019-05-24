@@ -202,6 +202,10 @@ def request_reservation():
     {
         "type": "section",
         "block_id": "acc_pick_section",
+        "text": {
+            "type": "plain_text",
+            "text": "There are %s accounts in the pool" % len(STATUS)
+        },
         "accessory": {
             "action_id": "account_reservation",
             "type": "static_select",
