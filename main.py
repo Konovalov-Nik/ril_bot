@@ -103,21 +103,6 @@ def check():
 def reserve(who, what, where):
 
     resp_text = "placeholder"
-    body = {
-        "blocks":[{
-            "type": "section",
-            "block_id": "reservation_response",
-            "text": {
-                "type": "plain_text",
-                "text": resp_text
-            }
-        }],
-        "text": "",
-        "as_user": "true",
-        "response_type": "in_channel",
-        "channel": where,
-        "token": BOT_TOKEN
-    }
 
     user_has_reserved = False
     for acc in STATUS:
@@ -140,6 +125,21 @@ def reserve(who, what, where):
     body["blocks"] = json.dumps(body["blocks"])
 
     url = "https://slack.com/api/chat.postMessage"
+    body = {
+        "blocks":[{
+            "type": "section",
+            "block_id": "reservation_response",
+            "text": {
+                "type": "plain_text",
+                "text": resp_text
+            }
+        }],
+        "text": "",
+        "as_user": "true",
+        "response_type": "in_channel",
+        "channel": where,
+        "token": BOT_TOKEN
+    }
     bot_response = requests.post(url, data=body, headers={"acccept": "application/json"})
     print(bot_response.text)
 
