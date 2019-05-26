@@ -108,7 +108,7 @@ def reserve(who, what, where):
             "block_id": "reservation_response",
             "text": {
                 "type": "plain_text",
-                "text": ""
+                "text": "placeholder"
             }
         }],
         "text": "",
