@@ -129,7 +129,7 @@ def reserve(who, what, where):
             "type": "section",
             "block_id": "reservation_response",
             "text": {
-                "type": "plain_text",
+                "type": "mrkdwn",
                 "text": resp_text
             }
         }]),
