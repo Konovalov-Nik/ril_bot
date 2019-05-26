@@ -103,13 +103,14 @@ def check():
 def reserve(who, what, where):
 
     body = {
-        "blocks":[{
+        "blocks":json.dumps([{
             "type": "section",
+            "block_id": "reservation_response",
             "text": {
                 "type": "plain_text",
                 "text": ""
             }
-        }],
+        }]),
         "text": "",
         "as_user": "true",
         "response_type": "in_channel",
