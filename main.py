@@ -40,24 +40,21 @@ def endpoint():
         payload = json.loads(request.form["payload"])
         action = payload["actions"][0]
         action_id = action["action_id"]
+        user_id = payload["user"]["id"]
 
         if action_id == "account_reservation":
             raw_value = action["selected_option"]["value"]
             acc_id = int(raw_value[len("reserve_"):])
-            user_id = payload["user"]["id"]
             channel_id = payload["container"]["channel_id"]
 
             return reserve(user_id, acc_id, channel_id)
-        #payload = json.loads(request.form["payload"])
-        #answer = payload["actions"][0]["value"]
-        #user_id = payload["user"]["id"]
-        #if answer == "ack":
-        #    return ack_usage(user_id)
-        #if answer == "deny":
-        #    return deny_usage(user_id)
-        #if "reserve" in answer:
-        #    acc_id = answer[:len("reserve_")]
-        #    return reserve(user_id, acc_id)
+
+        if "actions" in payload:
+            ack_answer = payload["actions"][0]["value"]
+            if ack_answer == "ack":
+                return ack_usage(user_id)
+            if ack_answer == "deny":
+                return deny_usage(user_id)
 
 
     # simple requests
@@ -110,10 +107,10 @@ def reserve(who, what, where):
             user_has_reserved = True
 
     acc = get_acc_by_id(what)
-    if acc["reserved"]:
-        resp_text = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
-    elif user_has_reserved:
+    if user_has_reserved:
         resp_text = "You have already reserved an account."
+    elif acc["reserved"]:
+        resp_text = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
     else:
         acc["reserved"] = True
         acc["reserver"] = who
@@ -271,13 +268,14 @@ def request_reservation():
     return resp
 
 
-def ack_usage(who, what):
-    if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
-        NOTIFICATION_AFK_TIMER.cancel()
+def ack_usage(who):
+    acc = get_acc_by_reserver(who)
 
-        global AFK_TIMER
-        AFK_TIMER = Timer(AFK_TIMEOUT, notify)
-        AFK_TIMER.start()
+    if acc["notification_afk_timer"].is_alive() and acc["reserver"] == who:
+        acc["notification_afk_timer"].cancel()
+
+        acc["afk_timer"] = Timer(AFK_TIMEOUT, notify, args=(who, acc["id"]))
+        acc["afk_timer"].start()
 
         body = {"text": "OK! It's yours!", "response_type": "in_channel"}
 
@@ -289,10 +287,11 @@ def ack_usage(who, what):
 
     return resp
 
-def deny_usage(who, what):
-    if NOTIFICATION_AFK_TIMER.is_alive() and STATUS["reserver"] == who:
-        force_free()
-        NOTIFICATION_AFK_TIMER.cancel()
+def deny_usage(who):
+    acc = get_acc_by_reserver(who)
+    if acc["notification_afk_timer"].is_alive() and acc["reserver"] == who:
+        force_free(acc["id"])
+        acc["notification_afk_timer"].cancel()
 
         body = {"text": "OK! It's free now!", "response_type": "in_channel"}
     else:
@@ -303,10 +302,18 @@ def deny_usage(who, what):
 
     return resp
 
+
 def get_acc_by_id(_id):
     for acc in STATUS:
         if acc["id"] == _id:
             return acc
+
+
+def get_acc_by_reserver(who):
+    for acc in STATUS:
+        if acc["reserver"] == who:
+            return acc
+
 
 if __name__ == "__main__":
     main()
