@@ -122,18 +122,17 @@ def reserve(who, what, where):
         acc["afk_timer"] = Timer(AFK_TIMEOUT, notify, args=(who, what))
         acc["afk_timer"].start()
 
-    body["blocks"] = json.dumps(body["blocks"])
 
     url = "https://slack.com/api/chat.postMessage"
     body = {
-        "blocks":[{
+        "blocks":json.dumps([{
             "type": "section",
             "block_id": "reservation_response",
             "text": {
                 "type": "plain_text",
                 "text": resp_text
             }
-        }],
+        }]),
         "text": "",
         "as_user": "true",
         "response_type": "in_channel",
