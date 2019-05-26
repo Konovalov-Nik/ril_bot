@@ -105,7 +105,6 @@ def reserve(who, what, where):
     body = {
         "blocks":[{
             "type": "section",
-            "block_id": "reservation_response",
             "text": {
                 "type": "plain_text",
                 "text": ""
