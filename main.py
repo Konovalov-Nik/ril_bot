@@ -103,14 +103,14 @@ def check():
 def reserve(who, what, where):
 
     body = {
-        "blocks":json.dumps([{
+        "blocks":[{
             "type": "section",
             "block_id": "reservation_response",
             "text": {
                 "type": "plain_text",
                 "text": ""
             }
-        }]),
+        }],
         "text": "",
         "as_user": "true",
         "response_type": "in_channel",
@@ -138,6 +138,7 @@ def reserve(who, what, where):
         acc["afk_timer"] = Timer(AFK_TIMEOUT, notify, args=(who, what))
         acc["afk_timer"].start()
 
+    body["blocks"] = json.dumps(body["blocks"])
 
     url = "https://slack.com/api/chat.postMessage"
     bot_response = requests.post(url, data=body, headers={"acccept": "application/json"})
