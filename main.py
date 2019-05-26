@@ -39,7 +39,7 @@ def endpoint():
         # handling form responses
         payload = json.loads(request.form["payload"])
         action = payload["actions"][0]
-        action_id = action["action_id"]
+        action_id = action.get("action_id")
         user_id = payload["user"]["id"]
 
         if action_id == "account_reservation":
@@ -49,8 +49,8 @@ def endpoint():
 
             return reserve(user_id, acc_id, channel_id)
 
-        if "actions" in payload:
-            ack_answer = payload["actions"][0]["value"]
+        if "value" in action:
+            ack_answer = action["value"]
             if ack_answer == "ack":
                 return ack_usage(user_id)
             if ack_answer == "deny":
