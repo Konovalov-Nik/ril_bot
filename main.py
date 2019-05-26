@@ -102,13 +102,14 @@ def check():
 
 def reserve(who, what, where):
 
+    resp_text = "placeholder"
     body = {
         "blocks":[{
             "type": "section",
             "block_id": "reservation_response",
             "text": {
                 "type": "plain_text",
-                "text": "placeholder"
+                "text": resp_text
             }
         }],
         "text": "",
@@ -118,8 +119,6 @@ def reserve(who, what, where):
         "token": BOT_TOKEN
     }
 
-    text = body["blocks"][0]["text"]["text"]
-
     user_has_reserved = False
     for acc in STATUS:
         if acc["reserver"] == who:
@@ -127,13 +126,13 @@ def reserve(who, what, where):
 
     acc = get_acc_by_id(what)
     if acc["reserved"]:
-        text = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
+        resp_text = "Citrix %s is reserved now by <@%s>. Please wait!" % (acc["name"], acc["reserver"])
     elif user_has_reserved:
-        text = "You have already reserved an account."
+        resp_text = "You have already reserved an account."
     else:
         acc["reserved"] = True
         acc["reserver"] = who
-        text = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
+        resp_text = "Citrix %s is yours. Please dont forget to free it when you are done!" % acc["name"]
 
         acc["afk_timer"] = Timer(AFK_TIMEOUT, notify, args=(who, what))
         acc["afk_timer"].start()
